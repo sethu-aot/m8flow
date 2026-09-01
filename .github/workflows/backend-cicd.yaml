@@ -1,4 +1,13 @@
 name: m8flow-backend CI/CD
+# =============================================================================
+# Triggers:
+#   PR to 'main'           → CI only (lint, test, SAST, Trivy, build check)
+#   Push/merge to 'main'   → CI only (build + push image to Docker Hub)
+#   workflow_dispatch       → CD only (promote pre-built image to dev/demo/qa)
+#
+# ALL deployments are manual via workflow_dispatch (promotion-only).
+# QA and DEMO MUST receive a pre-built image_uri — no fresh builds on dispatch.
+# =============================================================================
 
 on:
   push:
@@ -20,20 +29,29 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment to promote/deploy to"
+        description: "Target environment to deploy to"
         required: true
-        default: "demo"
+        default: "dev"
         type: choice
         options:
+          - dev
           - demo
           - qa
       image_uri:
-        description: "Pre-built Image URI to promote (e.g. m8flow/m8flow-backend:dev-a1b2c3d or release tag)"
+        description: "Pre-built image URI to promote (e.g. m8flow/m8flow-backend:dev-a1b2c3d)"
         required: true
         type: string
 
+# Grant the permissions the reusable CI orchestrator needs (security-events,
+# actions, packages, pull-requests, id-token). The CD orchestrator handles its
+# own AWS OIDC via id-token: write which is also covered here.
 permissions:
   contents: read
+  security-events: write
+  actions: write
+  packages: write
+  pull-requests: write
+  id-token: write
 
 concurrency:
   group: backend-cicd-${{ github.ref }}
@@ -43,7 +61,7 @@ jobs:
   ci:
     name: Backend CI Pipeline
     if: github.event_name != 'workflow_dispatch'
-    uses: AOT-Technologies/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@d74dfcd7c92886f2b74dbaf98536e6bde6d0be99
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@d74dfcd7c92886f2b74dbaf98536e6bde6d0be99
     with:
       config_path: m8flow-backend/devx-ci.yaml
       auto_merge: false
@@ -55,19 +73,18 @@ jobs:
 
   cd-dev:
     name: Deploy Backend → DEV
-    needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: AOT-Technologies/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@d74dfcd7c92886f2b74dbaf98536e6bde6d0be99
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@d74dfcd7c92886f2b74dbaf98536e6bde6d0be99
     with:
       environment: dev
-      image_uri: ${{ needs.ci.outputs.image_uri }}
+      image_uri: ${{ github.event.inputs.image_uri }}
       config_path: m8flow-backend/devx-config.yaml
     secrets: inherit
 
   cd-demo:
     name: Deploy Backend → DEMO
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'demo'
-    uses: AOT-Technologies/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@d74dfcd7c92886f2b74dbaf98536e6bde6d0be99
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@d74dfcd7c92886f2b74dbaf98536e6bde6d0be99
     with:
       environment: demo
       image_uri: ${{ github.event.inputs.image_uri }}
@@ -77,7 +94,7 @@ jobs:
   cd-qa:
     name: Deploy Backend → QA
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa'
-    uses: AOT-Technologies/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@d74dfcd7c92886f2b74dbaf98536e6bde6d0be99
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@d74dfcd7c92886f2b74dbaf98536e6bde6d0be99
     with:
       environment: qa
       image_uri: ${{ github.event.inputs.image_uri }}
