@@ -19,6 +19,8 @@ docker:
   dockerfile: "Dockerfile"
   image_name: "m8flow/m8flow-mcp-server-service"
   image_tag: ""
+  # X.Y.Z-rc tags are mutable; keep one level of undo when rebuilt.
+  backup_existing_tag: true
   registry_type: generic
   registry_url: "docker.io"
   platforms: "linux/amd64"
