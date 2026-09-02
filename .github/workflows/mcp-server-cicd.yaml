@@ -64,7 +64,7 @@ jobs:
   ci:
     name: MCP Server CI Pipeline
     if: github.event_name != 'workflow_dispatch'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@ec12bf8c715d57db6847fe1d3020989b44a5b3eb
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
     with:
       config_path: m8flow-mcp/devx-ci.yaml
       auto_merge: false
@@ -80,7 +80,7 @@ jobs:
   cd-dev:
     name: Deploy MCP Server → DEV
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@ec12bf8c715d57db6847fe1d3020989b44a5b3eb
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
     with:
       environment: dev
       image_uri: ${{ github.event.inputs.image_uri || '' }}
@@ -90,7 +90,7 @@ jobs:
   cd-demo:
     name: Deploy MCP Server → DEMO
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'demo'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@ec12bf8c715d57db6847fe1d3020989b44a5b3eb
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
     with:
       environment: demo
       image_uri: ${{ github.event.inputs.image_uri || '' }}
@@ -100,7 +100,7 @@ jobs:
   cd-qa:
     name: Deploy MCP Server → QA
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@ec12bf8c715d57db6847fe1d3020989b44a5b3eb
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
     with:
       environment: qa
       image_uri: ${{ github.event.inputs.image_uri || '' }}
