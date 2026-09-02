@@ -25,6 +25,19 @@ on:
         description: "Commit to tag. Leave empty for the tip of main."
         required: false
         type: string
+      components:
+        description: 'Which components to release ("all" for a full set)'
+        required: false
+        default: all
+        type: choice
+        options:
+          - all
+          - backend
+          - frontend
+          - keycloak
+          - connector-proxy
+          - mcp-server
+          - nats-consumer
       dry_run:
         description: "Resolve the tag only; create nothing and build nothing"
         required: false
@@ -49,7 +62,7 @@ concurrency:
 jobs:
   tag:
     name: Cut Release Tag
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/release-tag.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/release-tag.yaml@13e89ba2e25a9dff7349e9f877395193bf18ae91
     with:
       base_branch: main
       tag_name: ${{ inputs.tag_name }}
@@ -62,8 +75,8 @@ jobs:
   backend:
     name: Release m8flow-backend
     needs: tag
-    if: inputs.dry_run != true
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
+    if: inputs.dry_run != true && (inputs.components == 'all' || inputs.components == 'backend')
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@13e89ba2e25a9dff7349e9f877395193bf18ae91
     with:
       config_path: m8flow-backend/devx-ci.yaml
       push: true
@@ -76,8 +89,8 @@ jobs:
   frontend:
     name: Release m8flow-frontend
     needs: tag
-    if: inputs.dry_run != true
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
+    if: inputs.dry_run != true && (inputs.components == 'all' || inputs.components == 'frontend')
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@13e89ba2e25a9dff7349e9f877395193bf18ae91
     with:
       config_path: m8flow-frontend/devx-ci.yaml
       push: true
@@ -90,8 +103,8 @@ jobs:
   keycloak:
     name: Release m8flow-keycloak
     needs: tag
-    if: inputs.dry_run != true
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
+    if: inputs.dry_run != true && (inputs.components == 'all' || inputs.components == 'keycloak')
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@13e89ba2e25a9dff7349e9f877395193bf18ae91
     with:
       config_path: keycloak-extensions/devx-ci.yaml
       push: true
@@ -104,8 +117,8 @@ jobs:
   connector-proxy:
     name: Release m8flow-connector-proxy
     needs: tag
-    if: inputs.dry_run != true
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
+    if: inputs.dry_run != true && (inputs.components == 'all' || inputs.components == 'connector-proxy')
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@13e89ba2e25a9dff7349e9f877395193bf18ae91
     with:
       config_path: m8flow-connector-proxy/devx-ci.yaml
       push: true
@@ -118,8 +131,8 @@ jobs:
   mcp-server:
     name: Release m8flow-mcp-server
     needs: tag
-    if: inputs.dry_run != true
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
+    if: inputs.dry_run != true && (inputs.components == 'all' || inputs.components == 'mcp-server')
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@13e89ba2e25a9dff7349e9f877395193bf18ae91
     with:
       config_path: m8flow-mcp/devx-ci.yaml
       push: true
@@ -132,8 +145,8 @@ jobs:
   nats-consumer:
     name: Release m8flow-nats-consumer
     needs: tag
-    if: inputs.dry_run != true
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
+    if: inputs.dry_run != true && (inputs.components == 'all' || inputs.components == 'nats-consumer')
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@13e89ba2e25a9dff7349e9f877395193bf18ae91
     with:
       config_path: m8flow-nats-consumer/devx-ci.yaml
       push: true
@@ -176,9 +189,11 @@ jobs:
             echo "| nats-consumer | \`m8flow/m8flow-nats-consumer:${TAG}\` | ${R_NATS} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
+          # A component not selected for this release is 'skipped', which is a
+          # normal outcome; only a real failure should fail the release.
           for r in "$R_BACKEND" "$R_FRONTEND" "$R_KEYCLOAK" "$R_PROXY" "$R_MCP" "$R_NATS"; do
-            if [[ "$r" != "success" ]]; then
-              echo "::error::At least one component failed to build for ${TAG}."
+            if [[ "$r" != "success" && "$r" != "skipped" ]]; then
+              echo "::error::At least one selected component failed to build for ${TAG}."
               exit 1
             fi
           done
