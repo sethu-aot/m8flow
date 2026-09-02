@@ -9,6 +9,12 @@ name: m8flow-frontend CI/CD
 # QA and DEMO MUST receive a pre-built image_uri — no fresh builds on dispatch.
 # =============================================================================
 
+#
+# TRIGGER MATRIX
+#   PR -> main            CI only. Image built and scanned, never published.
+#   push/merge -> main    CI only. Nothing published.
+#   workflow_dispatch     CD only. Promotes an already-published image.
+#   Releases              cut by release.yaml, which owns the X.Y.Z-rc tag.
 on:
   push:
     branches:
