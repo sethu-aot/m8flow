@@ -62,20 +62,20 @@ jobs:
   ci:
     name: Backend CI Pipeline
     if: github.event_name != 'workflow_dispatch'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@67c3e992b8779b3e4d31bb2ad4b4e33a9130bc6a
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@aca4180608fc437474780dce2d3eef1a95c8e79a
     with:
       config_path: m8flow-backend/devx-ci.yaml
       auto_merge: false
       push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      registry_username: ${{ vars.DOCKERHUB_USERNAME }}
     secrets:
-      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
       registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
       sonar_token: ${{ secrets.SONAR_TOKEN }}
 
   cd-dev:
     name: Deploy Backend → DEV
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@67c3e992b8779b3e4d31bb2ad4b4e33a9130bc6a
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@aca4180608fc437474780dce2d3eef1a95c8e79a
     with:
       environment: dev
       image_uri: ${{ github.event.inputs.image_uri || '' }}
@@ -85,7 +85,7 @@ jobs:
   cd-demo:
     name: Deploy Backend → DEMO
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'demo'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@67c3e992b8779b3e4d31bb2ad4b4e33a9130bc6a
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@aca4180608fc437474780dce2d3eef1a95c8e79a
     with:
       environment: demo
       image_uri: ${{ github.event.inputs.image_uri || '' }}
@@ -95,7 +95,7 @@ jobs:
   cd-qa:
     name: Deploy Backend → QA
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@67c3e992b8779b3e4d31bb2ad4b4e33a9130bc6a
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@aca4180608fc437474780dce2d3eef1a95c8e79a
     with:
       environment: qa
       image_uri: ${{ github.event.inputs.image_uri || '' }}
