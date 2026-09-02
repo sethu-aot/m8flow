@@ -51,3 +51,5 @@ security:
   sbom_scan:
     enabled: true
     severity: medium
+
+# Trigger PR test
