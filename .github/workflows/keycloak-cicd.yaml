@@ -68,9 +68,11 @@ jobs:
     with:
       config_path: keycloak-extensions/devx-ci.yaml
       auto_merge: false
-      # Releases are cut by release.yaml, which owns the X.Y.Z-rc tag.
-      # Here a merge to main publishes a commit-SHA image for traceability.
-      push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      # Never publishes. release.yaml is the only workflow that pushes an
+      # image, and it tags it X.Y.Z-rc. A merge to main runs the full CI --
+      # build, test, SAST -- and discards the image, which matches what the
+      # pipeline being replaced did: nothing was published outside a release.
+      push: false
       registry_username: ${{ vars.DOCKERHUB_USERNAME }}
     secrets:
       registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
