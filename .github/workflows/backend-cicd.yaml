@@ -62,7 +62,7 @@ jobs:
   ci:
     name: Backend CI Pipeline
     if: github.event_name != 'workflow_dispatch'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@dfc5d1d379c92c0ee1663ef58bf296c6bd4546a8
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@bf04122a66f6fd092710cf5be62c5085df00f976
     with:
       config_path: m8flow-backend/devx-ci.yaml
       auto_merge: false
@@ -75,7 +75,7 @@ jobs:
   cd-dev:
     name: Deploy Backend → DEV
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@dfc5d1d379c92c0ee1663ef58bf296c6bd4546a8
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@bf04122a66f6fd092710cf5be62c5085df00f976
     with:
       environment: dev
       image_uri: ${{ github.event.inputs.image_uri || '' }}
@@ -85,7 +85,7 @@ jobs:
   cd-demo:
     name: Deploy Backend → DEMO
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'demo'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@dfc5d1d379c92c0ee1663ef58bf296c6bd4546a8
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@bf04122a66f6fd092710cf5be62c5085df00f976
     with:
       environment: demo
       image_uri: ${{ github.event.inputs.image_uri || '' }}
@@ -95,7 +95,7 @@ jobs:
   cd-qa:
     name: Deploy Backend → QA
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@dfc5d1d379c92c0ee1663ef58bf296c6bd4546a8
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@bf04122a66f6fd092710cf5be62c5085df00f976
     with:
       environment: qa
       image_uri: ${{ github.event.inputs.image_uri || '' }}
