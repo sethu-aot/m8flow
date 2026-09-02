@@ -46,7 +46,7 @@ on:
 # actions, packages, pull-requests, id-token). The CD orchestrator handles its
 # own AWS OIDC via id-token: write which is also covered here.
 permissions:
-  contents: read
+  contents: write
   security-events: write
   actions: write
   packages: write
