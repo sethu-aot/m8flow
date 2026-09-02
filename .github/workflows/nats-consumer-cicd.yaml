@@ -64,7 +64,7 @@ jobs:
   ci:
     name: NATS Consumer CI Pipeline
     if: github.event_name != 'workflow_dispatch'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       config_path: m8flow-nats-consumer/devx-ci.yaml
       auto_merge: false
@@ -80,7 +80,7 @@ jobs:
   cd-dev:
     name: Deploy NATS Consumer → DEV
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       environment: dev
       image_uri: ${{ github.event.inputs.image_uri || '' }}
@@ -90,7 +90,7 @@ jobs:
   cd-demo:
     name: Deploy NATS Consumer → DEMO
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'demo'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       environment: demo
       image_uri: ${{ github.event.inputs.image_uri || '' }}
@@ -100,7 +100,7 @@ jobs:
   cd-qa:
     name: Deploy NATS Consumer → QA
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       environment: qa
       image_uri: ${{ github.event.inputs.image_uri || '' }}

@@ -31,8 +31,16 @@ on:
         default: false
         type: boolean
 
+# Declared once at workflow level. A job-level permissions block on a job that
+# calls a reusable workflow makes the run fail to start, so the superset lives
+# here: contents: write for tag creation, the rest for the CI orchestrator.
 permissions:
-  contents: read
+  contents: write
+  security-events: write
+  actions: read
+  id-token: write
+  packages: write
+  pull-requests: write
 
 concurrency:
   group: release
@@ -41,9 +49,7 @@ concurrency:
 jobs:
   tag:
     name: Cut Release Tag
-    permissions:
-      contents: write   # create and push the tag
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/release-tag.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/release-tag.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       base_branch: main
       tag_name: ${{ inputs.tag_name }}
@@ -57,14 +63,7 @@ jobs:
     name: Release m8flow-backend
     needs: tag
     if: inputs.dry_run != true
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-      id-token: write
-      packages: write
-      pull-requests: write
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       config_path: m8flow-backend/devx-ci.yaml
       push: true
@@ -78,14 +77,7 @@ jobs:
     name: Release m8flow-frontend
     needs: tag
     if: inputs.dry_run != true
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-      id-token: write
-      packages: write
-      pull-requests: write
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       config_path: m8flow-frontend/devx-ci.yaml
       push: true
@@ -99,14 +91,7 @@ jobs:
     name: Release m8flow-keycloak
     needs: tag
     if: inputs.dry_run != true
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-      id-token: write
-      packages: write
-      pull-requests: write
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       config_path: keycloak-extensions/devx-ci.yaml
       push: true
@@ -120,14 +105,7 @@ jobs:
     name: Release m8flow-connector-proxy
     needs: tag
     if: inputs.dry_run != true
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-      id-token: write
-      packages: write
-      pull-requests: write
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       config_path: m8flow-connector-proxy/devx-ci.yaml
       push: true
@@ -141,14 +119,7 @@ jobs:
     name: Release m8flow-mcp-server
     needs: tag
     if: inputs.dry_run != true
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-      id-token: write
-      packages: write
-      pull-requests: write
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       config_path: m8flow-mcp/devx-ci.yaml
       push: true
@@ -162,14 +133,7 @@ jobs:
     name: Release m8flow-nats-consumer
     needs: tag
     if: inputs.dry_run != true
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-      id-token: write
-      packages: write
-      pull-requests: write
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@c78ae914afdf908b42cfd16dd9a25706ccbb2f96
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@225b2706a773cb4e716ee6c93d0b87dc89e67356
     with:
       config_path: m8flow-nats-consumer/devx-ci.yaml
       push: true
