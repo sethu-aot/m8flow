@@ -11,10 +11,6 @@ name: m8flow-connector-proxy CI/CD
 
 on:
   push:
-    # Release tags build every component at one version; GitHub does not
-    # apply the paths filter below to tag pushes, which is what we want here.
-    tags:
-      - '*-rc'
     branches:
       - main
     paths:
@@ -68,10 +64,9 @@ jobs:
     with:
       config_path: m8flow-connector-proxy/devx-ci.yaml
       auto_merge: false
-      push: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) }}
-      # Release tag -> the image carries the release version (1.0.7-rc).
-      # Merge to main -> empty, so smart versioning uses the commit SHA.
-      image_tag: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
+      # Releases are cut by release.yaml, which owns the X.Y.Z-rc tag.
+      # Here a merge to main publishes a commit-SHA image for traceability.
+      push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       registry_username: ${{ vars.DOCKERHUB_USERNAME }}
     secrets:
       registry_password: ${{ secrets.DOCKERHUB_TOKEN }}
