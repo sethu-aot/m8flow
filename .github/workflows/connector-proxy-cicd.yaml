@@ -60,7 +60,7 @@ jobs:
   ci:
     name: Connector Proxy CI Pipeline
     if: github.event_name != 'workflow_dispatch'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@6110a5e3a3594b36c576e9e3e82f5ff8f105c303
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@53a98aa091182e86caa193040bda1b57b3734707
     with:
       config_path: m8flow-connector-proxy/devx-ci.yaml
       auto_merge: false
@@ -73,7 +73,7 @@ jobs:
   cd-dev:
     name: Deploy Connector Proxy → DEV
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@6110a5e3a3594b36c576e9e3e82f5ff8f105c303
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@53a98aa091182e86caa193040bda1b57b3734707
     with:
       environment: dev
       image_uri: ${{ github.event.inputs.image_uri }}
@@ -83,7 +83,7 @@ jobs:
   cd-demo:
     name: Deploy Connector Proxy → DEMO
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'demo'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@6110a5e3a3594b36c576e9e3e82f5ff8f105c303
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@53a98aa091182e86caa193040bda1b57b3734707
     with:
       environment: demo
       image_uri: ${{ github.event.inputs.image_uri }}
@@ -93,7 +93,7 @@ jobs:
   cd-qa:
     name: Deploy Connector Proxy → QA
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa'
-    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@6110a5e3a3594b36c576e9e3e82f5ff8f105c303
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@53a98aa091182e86caa193040bda1b57b3734707
     with:
       environment: qa
       image_uri: ${{ github.event.inputs.image_uri }}
