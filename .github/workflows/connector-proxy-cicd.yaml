@@ -50,6 +50,7 @@ permissions:
   packages: write
   pull-requests: write
   id-token: write
+  deployments: write
 
 concurrency:
   group: connector-proxy-cicd-${{ github.ref }}
