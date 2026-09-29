@@ -15,13 +15,15 @@ docker:
   enabled: true
   working_directory: "."            # Build context must be repo root (COPY keycloak-extensions/...)
   dockerfile: "docker/m8flow.keycloak.Dockerfile"
-  image_name: "m8flow/m8flow-keycloak"
+  image_name: "m8flow-keycloak"
   image_tag: ""
-  # X.Y.Z-rc tags are mutable; keep one level of undo when rebuilt.
-  backup_existing_tag: true
-  registry_type: generic
-  registry_url: "docker.io"
+  registry_type: ecr
+  registry_url: "653405621825.dkr.ecr.us-east-2.amazonaws.com"
   platforms: "linux/amd64"
+
+aws:
+  region: us-east-2
+  role_to_assume: arn:aws:iam::653405621825:role/GitHubActions-ECS-m8flow
 
 security:
   sast:
