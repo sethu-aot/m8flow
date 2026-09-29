@@ -1,0 +1,92 @@
+name: m8flow-designer CI/CD
+# =============================================================================
+# Triggers:
+#   PR to 'refactor/next-gen'    → CI only (test, build, SAST, Trivy, image build)
+#   Push to 'refactor/next-gen'  → CI + push the image to ECR (us-east-2)
+#   workflow_dispatch            → CD only (deploy a pre-built image to dev)
+# =============================================================================
+
+on:
+  push:
+    branches:
+      - refactor/next-gen
+      - "feat/M8F-556-**"            # TEMPORARY: fork testing, remove before the PR
+    paths:
+      - "m8flow-designer/**"
+      - "m8flow-bpmn/**"
+      - "docker/m8flow.designer.Dockerfile"
+      - "docker/m8flow-designer-nginx.conf.template"
+      - ".github/workflows/designer-cicd.yaml"
+
+  pull_request:
+    branches:
+      - refactor/next-gen
+    paths:
+      - "m8flow-designer/**"
+      - "m8flow-bpmn/**"
+      - "docker/m8flow.designer.Dockerfile"
+      - "docker/m8flow-designer-nginx.conf.template"
+      - ".github/workflows/designer-cicd.yaml"
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment to deploy to"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+      image_uri:
+        description: "Pre-built image URI to deploy (e.g. 653405621825.dkr.ecr.us-east-2.amazonaws.com/m8flow-designer:a1b2c3d)"
+        required: true
+        type: string
+      dry_run:
+        description: "Validate the deploy against the cluster without changing anything"
+        required: false
+        default: false
+        type: boolean
+
+# Least privilege, but constrained by what GitHub validates. `contents: write`
+# is required even though nothing here writes contents: ci-orchestrator has a
+# nested `auto-merge` job declaring it, and GitHub validates every job in the
+# call graph at startup -- including ones that never run (auto_merge is false
+# here). Dropping it fails the run before any job starts. `actions` is genuinely
+# only ever read, so it stays at read.
+permissions:
+  contents: write
+  actions: read
+  security-events: write
+  packages: write
+  pull-requests: write
+  id-token: write
+  deployments: write
+
+concurrency:
+  group: designer-cicd-${{ github.event.inputs.environment || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    name: Designer CI Pipeline
+    if: github.event_name != 'workflow_dispatch'
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/ci-orchestrator.yaml@test/m8flow-nextgen # TEMPORARY: fork DevX
+    with:
+      config_path: m8flow-designer/devx-ci.yaml
+      auto_merge: false
+      # A pull request only builds; the image is pushed to ECR (OIDC, no
+      # stored credentials) once the change is on the branch.
+      push: ${{ github.event_name == 'push' }}
+    secrets:
+      sonar_token: ${{ secrets.SONAR_TOKEN }}
+
+  cd-dev:
+    name: Deploy Designer → DEV
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev'
+    uses: sethu-aot/devx-reusable-workflows/.github/workflows/cd-orchestrator.yaml@test/m8flow-nextgen # TEMPORARY: fork DevX
+    with:
+      environment: dev
+      image_uri: ${{ github.event.inputs.image_uri }}
+      config_path: m8flow-designer/devx-config.yaml
+      dry_run: ${{ github.event.inputs.dry_run == 'true' }}
+    secrets: inherit
