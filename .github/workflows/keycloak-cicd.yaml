@@ -2,8 +2,9 @@ name: m8flow-keycloak CI/CD
 # =============================================================================
 # Triggers:
 #   PR to 'refactor/next-gen'    → CI only (lint, test, SAST, Trivy, image build)
-#   Push to 'refactor/next-gen'  → CI + push the image to ECR (us-east-2)
-#   workflow_dispatch            → CD only (deploy a pre-built image to dev)
+#   Push to 'refactor/next-gen'  → CI only (the image is built, not published)
+#   release.yaml                 → publishes X.Y.Z-rc images to ECR (us-east-2)
+#   workflow_dispatch            → CD only (deploy a released image to dev)
 # =============================================================================
 
 on:
@@ -78,9 +79,10 @@ jobs:
     with:
       config_path: keycloak-extensions/devx-ci.yaml
       auto_merge: false
-      # A pull request only builds; the image is pushed to ECR (OIDC, no
-      # stored credentials) once the change is on the branch.
-      push: ${{ github.event_name == 'push' }}
+      # Never publishes, as on main: a PR or a merge runs the full CI and
+      # discards the image. release.yaml is the only workflow that pushes
+      # images (X.Y.Z-rc, to ECR); deploys are the manual dispatch below.
+      push: false
     secrets:
       sonar_token: ${{ secrets.SONAR_TOKEN }}
 
