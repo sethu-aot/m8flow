@@ -57,6 +57,9 @@ security:
   sast:
     enabled: true
     tool: "sonarqube,semgrep"
+    # Semgrep rulesets (comma-separated). p/ci, the default, is a minimal
+    # high-confidence set that found nothing here.
+    ruleset: "p/default,p/typescript,p/react,p/secrets"
     scan_path: "m8flow-designer"
     sonar_host_url: "https://sonarcloud.io"
     sonar_organization: "aot-technologies"

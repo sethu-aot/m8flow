@@ -45,6 +45,9 @@ security:
     # fork. semgrep needs no token, so it covers PRs; SonarQube still runs
     # on push to main and releases. Requires devx >= v1.2.1.
     tool: "sonarqube,semgrep"
+    # Semgrep rulesets (comma-separated). p/ci, the default, is a minimal
+    # high-confidence set that found nothing here.
+    ruleset: "p/default,p/java,p/secrets"
     scan_path: "keycloak-extensions"
     sonar_host_url: "https://sonarcloud.io"
     sonar_organization: "aot-technologies"
