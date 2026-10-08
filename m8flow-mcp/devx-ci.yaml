@@ -14,8 +14,8 @@ build:
 
 docker:
   enabled: true
-  working_directory: "m8flow-mcp"
-  dockerfile: "Dockerfile"
+  working_directory: "."  # TEMP fork demo: the Dockerfile needs m8flow-telemetry
+  dockerfile: "m8flow-mcp/Dockerfile"
   image_name: "m8flow-mcp"
   image_tag: ""
   registry_type: ecr
