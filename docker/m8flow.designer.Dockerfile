@@ -38,6 +38,9 @@ ENV VITE_BACKEND_BASE_URL=${VITE_BACKEND_BASE_URL}
 # Browser-reachable MCP server URL shown on the MCP Connection page.
 ARG VITE_MCP_SERVER_URL=
 ENV VITE_MCP_SERVER_URL=${VITE_MCP_SERVER_URL}
+# Celery/Flower link in the System menu (super-admins).
+ARG VITE_M8FLOW_CELERY_FLOWER_URL=
+ENV VITE_M8FLOW_CELERY_FLOWER_URL=${VITE_M8FLOW_CELERY_FLOWER_URL}
 
 # `npm run build` is `tsc --noEmit && vite build`; this runs only the bundling
 # half. Typechecking is a workstation/CI gate, not an image-build gate -- and
